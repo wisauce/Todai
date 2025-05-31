@@ -3,6 +3,7 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import FormattedAIResponse from "@/components/FormattedAIResponse"
+import DeleteConfirmation from "@/components/DeleteConfirmation"
 import { PlusIcon, CalendarIcon, MenuIcon, XIcon } from "lucide-react"
 
 interface DiaryEntry {
@@ -19,6 +20,7 @@ export default function HomePage() {
   const [result, setResult] = useState("")
   const [entries, setEntries] = useState<DiaryEntry[]>([])
   const [currentEntryId, setCurrentEntryId] = useState<string | null>(null)
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
@@ -133,24 +135,28 @@ export default function HomePage() {
     setLoading(false)
   }
 
-  const deleteEntry = (id: string) => {
-    setEntries(prev => {
-      const updated = prev.filter(e => e.id !== id)
-      saveEntriesToLocalStorage(updated)
-      return updated
-    })
+  const handleDelete = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation()
+    setCurrentEntryId(id)
+    setShowDeleteConfirmation(true)
   }
 
-  const handleDelete = (e: React.MouseEvent, id: string) => { // bisa dibagusin lagi sih kek pop up gitu misal :<
-    e.stopPropagation()
-    if (confirm("Are you sure you want to delete this entry?")) {
-      deleteEntry(id)
-      if (currentEntryId === id) {
-        setCurrentEntryId(null)
-        setInput("")
-        setResult("")
-      }
+  const confirmDelete = () => {
+    if (currentEntryId) {
+      setEntries(prev => {
+        const updated = prev.filter(e => e.id !== currentEntryId)
+        saveEntriesToLocalStorage(updated)
+        return updated
+      })
+      setCurrentEntryId(null)
+      setInput("")
+      setResult("")
+      setShowDeleteConfirmation(false)
     }
+  }
+
+  const cancelDelete = () => {
+    setShowDeleteConfirmation(false)
   }
 
   const currentEntry = entries.find(e => e.id === currentEntryId)
@@ -193,7 +199,7 @@ export default function HomePage() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleDelete(e, entry.id);
+                        handleDelete(e, entry.id)
                       }}
                       className="mt-2 text-red-500 hover:text-red-600 text-xs hover:bg-red-300 rounded px-2 py-1 transition-colors"
                     >
@@ -206,6 +212,13 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+
+       {showDeleteConfirmation && (
+            <DeleteConfirmation
+              onDelete={confirmDelete}
+              onCancel={cancelDelete}
+          />
+        )}
 
       {sidebarOpen && <div className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />}
 
