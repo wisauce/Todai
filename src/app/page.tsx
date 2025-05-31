@@ -133,6 +133,26 @@ export default function HomePage() {
     setLoading(false)
   }
 
+  const deleteEntry = (id: string) => {
+    setEntries(prev => {
+      const updated = prev.filter(e => e.id !== id)
+      saveEntriesToLocalStorage(updated)
+      return updated
+    })
+  }
+
+  const handleDelete = (e: React.MouseEvent, id: string) => { // bisa dibagusin lagi sih kek pop up gitu misal :<
+    e.stopPropagation()
+    if (confirm("Are you sure you want to delete this entry?")) {
+      deleteEntry(id)
+      if (currentEntryId === id) {
+        setCurrentEntryId(null)
+        setInput("")
+        setResult("")
+      }
+    }
+  }
+
   const currentEntry = entries.find(e => e.id === currentEntryId)
 
   return (
@@ -162,12 +182,24 @@ export default function HomePage() {
             ) : (
               <div className="p-2">
                 {entries.map(entry => (
-                  <button key={entry.id} onClick={() => selectEntry(entry.id)}
-                    className={`w-full text-left p-3 rounded-lg mb-2 transition-colors ${currentEntryId === entry.id ? "bg-blue-50 border border-blue-200" : "hover:bg-gray-50"}`}>
+                  <div
+                    key={entry.id}
+                    className={`w-full text-left p-3 rounded-lg mb-2 transition-colors cursor-pointer ${currentEntryId === entry.id ? "bg-blue-50 border border-blue-200" : "hover:bg-gray-50"}`}
+                    onClick={() => selectEntry(entry.id)}
+                  >
                     <div className="font-medium text-sm text-gray-800 truncate">{entry.title}</div>
                     <div className="text-xs text-gray-500 mt-1">{formatDateTime(entry.timestamp)}</div>
                     {entry.input && <div className="text-xs text-gray-600 mt-1 truncate">{entry.input.substring(0, 50)}...</div>}
-                  </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(e, entry.id);
+                      }}
+                      className="mt-2 text-red-500 hover:text-red-600 text-xs hover:bg-red-300 rounded px-2 py-1 transition-colors"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 ))}
               </div>
             )}
@@ -208,9 +240,16 @@ export default function HomePage() {
                   id="diary-input"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault(); 
+                        handleSubmit(e);
+                      }
+                    }}
                   placeholder="Share your thoughts and feelings..."
                   className="w-full p-4 border border-gray-200 rounded-lg resize-none h-40 mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   required
+                  
                 />
               </div>
               <button
