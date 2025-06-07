@@ -13,11 +13,10 @@ export default function FormattedAIResponse({ text }: Props) {
   let elementKey = 0
 
   const getNextKey = () => `element-${elementKey++}`
-
   const flushList = () => {
     if (currentList.length > 0) {
       elements.push(
-        <ul className="list-disc pl-6 mb-4" key={getNextKey()}>
+        <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-300" key={getNextKey()}>
           {currentList.map((item, idx) => (
             <li key={`list-item-${idx}`} className="mb-1">
               {formatInlineText(item)}
@@ -94,9 +93,7 @@ export default function FormattedAIResponse({ text }: Props) {
       if (remainingText) {
         parts.push(<span key={`${baseKey}-text-${partKey++}`}>{remainingText}</span>)
       }
-    }
-
-    return parts.length > 0 ? parts : text
+    }    return parts.length > 0 ? parts : text
   }
 
   lines.forEach((line) => {
@@ -106,7 +103,7 @@ export default function FormattedAIResponse({ text }: Props) {
       flushList()
       const headerText = trimmedLine.replace(/^###\s*/, "")
       elements.push(
-        <h3 className="text-lg font-semibold mt-4 mb-2 text-blue-600" key={getNextKey()}>
+        <h3 className="text-lg font-semibold mt-4 mb-2 text-blue-600 dark:text-blue-400" key={getNextKey()}>
           {headerText}
         </h3>,
       )
@@ -114,7 +111,7 @@ export default function FormattedAIResponse({ text }: Props) {
       flushList()
       const headerText = trimmedLine.replace(/^##\s*/, "")
       elements.push(
-        <h2 className="text-xl font-semibold mt-4 mb-2 text-blue-700" key={getNextKey()}>
+        <h2 className="text-xl font-semibold mt-4 mb-2 text-blue-700 dark:text-blue-300" key={getNextKey()}>
           {headerText}
         </h2>,
       )
@@ -122,17 +119,16 @@ export default function FormattedAIResponse({ text }: Props) {
       flushList()
       const headerText = trimmedLine.replace(/^#\s*/, "")
       elements.push(
-        <h1 className="text-2xl font-bold mt-4 mb-2 text-blue-800" key={getNextKey()}>
+        <h1 className="text-2xl font-bold mt-4 mb-2 text-blue-800 dark:text-blue-200" key={getNextKey()}>
           {headerText}
         </h1>,
-      )
-    } else if (trimmedLine.startsWith("- ") || trimmedLine.startsWith("* ")) {
+      )    } else if (trimmedLine.startsWith("- ") || trimmedLine.startsWith("* ")) {
       const listItem = trimmedLine.replace(/^[-*]\s*/, "")
       currentList.push(listItem)
     } else if (trimmedLine.length > 0) {
       flushList()
       elements.push(
-        <p className="mb-3 text-gray-700 leading-relaxed" key={getNextKey()}>
+        <p className="mb-3 text-gray-700 dark:text-gray-300 leading-relaxed" key={getNextKey()}>
           {formatInlineText(trimmedLine)}
         </p>,
       )

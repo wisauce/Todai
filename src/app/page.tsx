@@ -4,6 +4,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import FormattedAIResponse from "@/components/FormattedAIResponse"
 import DeleteConfirmation from "@/components/DeleteConfirmation"
+import DarkModeToggle from "@/components/DarkModeToggle"
 import { PlusIcon, CalendarIcon, MenuIcon, XIcon } from "lucide-react"
 
 interface DiaryEntry {
@@ -160,28 +161,28 @@ export default function HomePage() {
   }
 
   const currentEntry = entries.find(e => e.id === currentEntryId)
-
   return (
-    <div className="min-h-screen flex bg-gradient-to-b from-white to-blue-50/30">
-      <div className={`fixed inset-y-0 left-0 z-50 w-80 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
+    <div className="min-h-screen flex bg-gradient-to-b from-white to-blue-50/30 dark:from-gray-900 dark:to-gray-800/30">
+      <div className={`fixed inset-y-0 left-0 z-50 w-80 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="flex flex-col h-full">
-          <div className="flex items-center justify-between p-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-800">Diary History</h2>
-            <button onClick={() => setSidebarOpen(false)} className="lg:hidden p-1 rounded-md hover:bg-gray-100">
-              <XIcon className="w-5 h-5" />
-            </button>
-          </div>
-          <div className="p-4 border-b border-gray-200">
+          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Diary History</h2>
+            <div className="flex items-center gap-2">
+              <DarkModeToggle />
+              <button onClick={() => setSidebarOpen(false)} className="lg:hidden p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800">
+                <XIcon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              </button>
+            </div>
+          </div>          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
             <button
               onClick={createNewEntry}
-              className="w-full flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              className="w-full flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 transition-colors">
               <PlusIcon className="w-4 h-4" />
               New Entry
             </button>
-          </div>
-          <div className="flex-1 overflow-y-auto">
+          </div>          <div className="flex-1 overflow-y-auto">
             {entries.length === 0 ? (
-              <div className="p-4 text-center text-gray-500">
+              <div className="p-4 text-center text-gray-500 dark:text-gray-400">
                 <CalendarIcon className="w-8 h-8 mx-auto mb-2 opacity-50" />
                 <p className="text-sm">No diary entries yet</p>
               </div>
@@ -190,18 +191,18 @@ export default function HomePage() {
                 {entries.map(entry => (
                   <div
                     key={entry.id}
-                    className={`w-full text-left p-3 rounded-lg mb-2 transition-colors cursor-pointer ${currentEntryId === entry.id ? "bg-blue-50 border border-blue-200" : "hover:bg-gray-50"}`}
+                    className={`w-full text-left p-3 rounded-lg mb-2 transition-colors cursor-pointer ${currentEntryId === entry.id ? "bg-blue-50 border border-blue-200 dark:bg-blue-900/30 dark:border-blue-700" : "hover:bg-gray-50 dark:hover:bg-gray-800"}`}
                     onClick={() => selectEntry(entry.id)}
                   >
-                    <div className="font-medium text-sm text-gray-800 truncate">{entry.title}</div>
-                    <div className="text-xs text-gray-500 mt-1">{formatDateTime(entry.timestamp)}</div>
-                    {entry.input && <div className="text-xs text-gray-600 mt-1 truncate">{entry.input.substring(0, 50)}...</div>}
+                    <div className="font-medium text-sm text-gray-800 dark:text-gray-200 truncate">{entry.title}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{formatDateTime(entry.timestamp)}</div>
+                    {entry.input && <div className="text-xs text-gray-600 dark:text-gray-300 mt-1 truncate">{entry.input.substring(0, 50)}...</div>}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDelete(e, entry.id)
                       }}
-                      className="mt-2 text-red-500 hover:text-red-600 text-xs hover:bg-red-300 rounded px-2 py-1 transition-colors"
+                      className="mt-2 text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 text-xs hover:bg-red-300 dark:hover:bg-red-900/30 rounded px-2 py-1 transition-colors"
                     >
                       Delete
                     </button>
@@ -211,9 +212,7 @@ export default function HomePage() {
             )}
           </div>
         </div>
-      </div>
-
-       {showDeleteConfirmation && (
+      </div>       {showDeleteConfirmation && (
             <DeleteConfirmation
               onDelete={confirmDelete}
               onCancel={cancelDelete}
@@ -223,30 +222,30 @@ export default function HomePage() {
       {sidebarOpen && <div className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />}
 
       <div className="flex-1 flex flex-col lg:ml-0">
-        <div className="lg:hidden flex items-center justify-between p-4 bg-white border-b border-gray-200">
-          <button onClick={() => setSidebarOpen(true)} className="p-2 rounded-md hover:bg-gray-100">
-            <MenuIcon className="w-5 h-5" />
+        <div className="lg:hidden flex items-center justify-between p-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">          <button onClick={() => setSidebarOpen(true)} className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800">
+            <MenuIcon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
           </button>
           <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Todai</h1>
-          <div className="w-9" />
+          <DarkModeToggle />
         </div>
 
         <main className="flex-grow max-w-2xl mx-auto p-6 space-y-8 w-full">
           <div className="text-center mb-8 hidden lg:block">
-            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Todai</h1>
-            <p className="text-gray-600 mt-2">Your AI-powered diary companion</p>
+            <div className="flex items-center justify-center gap-4 mb-2">
+              <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Todai</h1>
+              <DarkModeToggle />
+            </div>
+            <p className="text-gray-600 dark:text-gray-300 mt-2">Your AI-powered diary companion</p>
           </div>
 
           {currentEntry && (
             <div className="text-center mb-4">
-              <h2 className="text-xl font-semibold text-gray-800">{currentEntry.title}</h2>
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">{currentEntry.title}</h2>
             </div>
-          )}
-
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          )}          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label htmlFor="diary-input" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="diary-input" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   What happened today?
                 </label>
                 <textarea
@@ -260,7 +259,7 @@ export default function HomePage() {
                       }
                     }}
                   placeholder="Share your thoughts and feelings..."
-                  className="w-full p-4 border border-gray-200 rounded-lg resize-none h-40 mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  className="w-full p-4 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg resize-none h-40 mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   required
                   
                 />
@@ -273,12 +272,10 @@ export default function HomePage() {
                 {loading ? "Analyzing..." : "Analyze my feelings"}
               </button>
             </form>
-          </div>
-
-          {result && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-6">
-              <h2 className="text-xl font-semibold mb-4 text-gray-800">AI Response:</h2>
-              <div className="bg-gray-50 rounded-lg p-4">
+          </div>          {result && (
+            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mt-6">
+              <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">AI Response:</h2>
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
                 <FormattedAIResponse text={result} />
               </div>
             </div>
